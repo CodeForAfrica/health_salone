@@ -4,6 +4,24 @@ from health_salone.src import config
 
 app = Celery('sms-listener', broker=config.MESSAGE_BROKER)
 
+RESULT_COUNT = 3
+CITIES = ['Western Area Rural',
+        'Bombali',
+        'Southern Province',
+        'Western Area Urban',
+         'Bo',
+        'Tonkolili',
+        'Kenema',
+        'Kono',
+        'Kambia',
+        'Freetown']
+
+MESSAGES = dict(
+        hit='',
+        miss="""Sorry, we were unable to find facilities that match your query.
+        Please try again with your city from this list: %s""" % CITIES
+        )
+
 @app.task(name='health_salone.src.core.process_request')
 def process_request(params):
     '''
@@ -33,11 +51,29 @@ def process_request(params):
         # assume message body == city
         db = Database()
         city_list = db.get_by_city(message_body)
-        print "Result: %s" % city_list
+        message = construct_message(city_list)
+        print "====  %s =====" % message
 
     except Exception, err:
         print "ERROR: %s -- %s" % (err, params)
         raise err
+
+def construct_message(facility_list):
+    '''
+    returns a message to be sent to the user
+    '''
+    if not facility_list:
+        return MESSAGES['miss']
+    else:
+        count = 1
+        message = ""
+        for facility in facility_list:
+            count += 1
+            message += "%s) %s/n" % (count, facility)
+            if count >= RESULT_COUNT:
+                break
+        return message
+
 
 class Database():
 
@@ -47,4 +83,7 @@ class Database():
 
     def get_by_city(self, city):
         resultset = self.table.find(City=city)
-        return resultset
+        result_list = []
+        for result in resultset:
+            result_list.append(result['description'])
+        return result_list
