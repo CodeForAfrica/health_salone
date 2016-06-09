@@ -46,7 +46,5 @@ class Database():
         self.table = self.db['healthdata']
 
     def get_by_city(self, city):
-        # REMOVE THIS !!!!
-        return self.db.query(
-                """select description, hours from healthdata where "City"='{}' """.format(city)
-                )
+        resultset = self.table.find(City=city)
+        return resultset
