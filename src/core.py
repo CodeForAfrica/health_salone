@@ -65,7 +65,7 @@ def construct_message(facility_list):
     if not facility_list:
         return MESSAGES['miss']
     else:
-        count = 1
+        count = 0
         message = ""
         for facility in facility_list:
             count += 1
