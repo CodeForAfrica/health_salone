@@ -1,0 +1,29 @@
+#!/bin/bash
+#chkconfig: 345 20 80
+#Description: Start the rabbitmq consumer
+#
+NAME=twisted
+
+start_app()
+{
+cd $APPS_HOME/health_salone/src
+twistd -y site.py
+}
+
+status_app()
+{
+cd $APPS_HOME/health_salone/src
+ps aux | grep `cat twistd.pid`
+}
+
+case "$1" in
+    start)
+    start_app
+    ;;
+    status)
+    status_app
+    ;;
+    *)
+    echo -e "Usage: health_salone/init/${NAME} status|start \n"
+esac
+exit 0

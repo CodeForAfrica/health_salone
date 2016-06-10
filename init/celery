@@ -1,0 +1,28 @@
+#!/bin/bash
+#chkconfig: 345 20 80
+#Description: Start the rabbitmq consumer
+#
+NAME=celery
+
+start_app()
+{
+cd $APPS_HOME/health_salone/src
+celery worker -A core -c 2 -l INFO --logfile=$APPS_HOME/health_salone/logs/celery.log &
+}
+
+status_app()
+{
+ps aux | grep -i celery | grep -i core
+}
+
+case "$1" in
+    start)
+    start_app
+    ;;
+    status)
+    status_app
+    ;;
+    *)
+    echo -e "Usage: health_salone/init/${NAME} status|start \n"
+esac
+exit 0
