@@ -1,4 +1,5 @@
 import dataset
+import requests
 from celery import Celery
 from health_salone.src import config
 
@@ -53,6 +54,7 @@ def process_request(params):
         city_list = db.get_by_city(message_body)
         message = construct_message(city_list)
         print "====  %s =====" % message
+        send_message(message, params['From'])
 
     except Exception, err:
         print "ERROR: %s -- %s" % (err, params)
@@ -73,6 +75,17 @@ def construct_message(facility_list):
             if count >= RESULT_COUNT:
                 break
         return message
+
+
+def send_message(message, phone_number):
+    '''
+    sends SMS
+    '''
+    sent = requests.post('http://52.28.87.96:9015/message/sms', params=dict(
+        message=message, phone_number=phone_number, source='health_salone'
+        ))
+    print "msg - %s - %s - %s" % (phone_number, sent.status_code, sent.text)
+
 
 
 class Database():
