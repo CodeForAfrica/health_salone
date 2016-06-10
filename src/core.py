@@ -81,7 +81,7 @@ def send_message(message, phone_number):
     '''
     sends SMS
     '''
-    sent = requests.post('http://52.28.87.96:9015/message/sms', params=dict(
+    sent = requests.post('http://sms.pythias.tech/sms', params=dict(
         message=message, phone_number=phone_number, source='health_salone'
         ))
     print "msg - %s - %s - %s" % (phone_number, sent.status_code, sent.text)
