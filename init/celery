@@ -6,6 +6,7 @@ NAME=celery
 
 start_app()
 {
+source $APPS_HOME/env_health_salone/bin/activate
 cd $APPS_HOME/health_salone/src
 celery worker -A core -c 2 -l INFO --logfile=$APPS_HOME/health_salone/logs/celery.log &
 }
