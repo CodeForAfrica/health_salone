@@ -48,10 +48,14 @@ def process_request(params):
     try:
         print params
         message_body = params['Body']
+        if message_body.strip().capitalize() not in CITIES:
+            message = "Please try again with one of the cities below:\n%s" % CITIES
+            send_message(message, params['From'])
+            return
 
         # assume message body == city
         db = Database()
-        city_list = db.get_by_city(message_body)
+        city_list = db.get_by_city(message_body.strip().capitalize())
         message = construct_message(city_list)
         print "====  %s =====" % message
         send_message(message, params['From'])
