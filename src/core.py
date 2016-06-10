@@ -7,22 +7,16 @@ from health_salone.src import config
 app = Celery('sms-listener', broker=config.MESSAGE_BROKER)
 
 RESULT_COUNT = 3
-CITIES = ['Western Area Rural',
-        'Bombali',
-        'Southern Province',
-        'Western Area Urban',
-         'Bo',
-        'Tonkolili',
-        'Kenema',
-        'Kono',
-        'Kambia',
-        'Freetown']
+CITIES = ['Western Area Rural', 'Bombali', 'Southern Province',
+          'Western Area Urban', 'Bo', 'Tonkolili', 'Kenema', 'Kono',
+          'Kambia', 'Freetown']
 
 MESSAGES = dict(
         hit='',
         miss="""Sorry, we were unable to find facilities that match your query.
         Please try again with your city from this list: %s""" % CITIES
         )
+
 
 @app.task(name='health_salone.src.core.process_request')
 def process_request(params):
@@ -65,6 +59,7 @@ def process_request(params):
         print "ERROR: %s -- %s" % (err, params)
         raise err
 
+
 def construct_message(facility_list):
     '''
     returns a message to be sent to the user
@@ -90,7 +85,6 @@ def send_message(message, phone_number):
         message=message, phone_number=phone_number, source='health_salone'
         ))
     print "msg - %s - %s - %s" % (phone_number, sent.status_code, sent.text)
-
 
 
 class Database():

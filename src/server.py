@@ -50,6 +50,7 @@ def write_error(request, error):
         log('write_error() fail - %r' % err, 'error')
         return
 
+
 def setup(func):
     '''
     decorator that extracts http parameters
@@ -65,6 +66,7 @@ def setup(func):
             log(error, 'error')
             raise err
     return __inner
+
 
 @setup
 def receive_sms(params, request):
@@ -105,8 +107,10 @@ class requestHandler(http.Request):
             self.write('404 - page not found')
             self.finish()
 
+
 class requestProtocol(http.HTTPChannel):
     requestFactory = requestHandler
+
 
 class RequestFactory(http.HTTPFactory):
     protocol = requestProtocol
@@ -114,4 +118,3 @@ class RequestFactory(http.HTTPFactory):
 
     def __init__(self):
         http.HTTPFactory.__init__(self)
-
