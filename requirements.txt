@@ -1,0 +1,5 @@
+celery>=3.1.17
+psycopg2
+nose
+requests>=2.5.1
+dataset
