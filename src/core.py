@@ -1,3 +1,4 @@
+import os
 import dataset
 import requests
 from celery import Celery
@@ -85,7 +86,7 @@ def send_message(message, phone_number):
     '''
     sends SMS
     '''
-    sent = requests.post('http://sms.pythias.tech/sms', params=dict(
+    sent = requests.post(os.getenv('SEND_SMS_URL'), params=dict(
         message=message, phone_number=phone_number, source='health_salone'
         ))
     print "msg - %s - %s - %s" % (phone_number, sent.status_code, sent.text)
