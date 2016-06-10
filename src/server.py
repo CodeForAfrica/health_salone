@@ -71,7 +71,7 @@ def receive_sms(params, request):
     '''
     '''
     process_request.delay(params)
-    write_response(True, request)
+    write_response('ACK', request)
 
 
 def get_pages():
