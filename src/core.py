@@ -1,8 +1,8 @@
-import os
 import dataset
 import requests
 from celery import Celery
 from health_salone.src import config
+#from twilio.rest import TwilioRestClient
 
 app = Celery('sms-listener', broker=config.MESSAGE_BROKER)
 
@@ -42,18 +42,18 @@ def process_request(params):
     '''
     try:
         print params
-        message_body = params['Body']
-        if message_body.strip().capitalize() not in CITIES:
+        message_body = params['Body'].strip()
+        if message_body.capitalize() not in CITIES:
             message = "Please try again with one of the cities below:\n%s" % CITIES
             send_message(message, params['From'])
             return
 
         # assume message body == city
         db = Database()
-        city_list = db.get_by_city(message_body.strip().capitalize())
+        city_list = db.get_by_city(message_body.capitalize())
         message = construct_message(city_list)
         print "====  %s =====" % message
-        send_message(message, params['From'])
+        return send_message(message, params['From'])
 
     except Exception, err:
         print "ERROR: %s -- %s" % (err, params)
@@ -81,10 +81,25 @@ def send_message(message, phone_number):
     '''
     sends SMS
     '''
-    sent = requests.post(os.getenv('SEND_SMS_URL'), params=dict(
-        message=message, phone_number=phone_number, source='health_salone'
-        ))
-    print "msg - %s - %s - %s" % (phone_number, sent.status_code, sent.text)
+    try:
+        # some validations
+        if not phone_number.startswith('+'):
+            phone_number = '+%s' % str(phone_number)
+        if len(message) > config.MAX_MESSAGE_LENGTH:
+            message = message[:config.MAX_MESSAGE_LENGTH]
+
+        sms_client = TwilioRestClient(config.TWILIO['SID'], config.TWILIO['TOKEN'])
+        sent = sms_client.messages.create(to=phone_number, from_=config.TWILIO['SENDER'], body=message)
+        print "msg - %s - %s - %s" % (phone_number, sent.status, sent.body)
+
+    except Exception, err:
+        print "ERROR: send_message() fail:  %s -- %s" % (phone_number, str(err))
+        sent = False
+
+    finally:
+        return dict(sent=sent,
+                phone_number=phone_number)
+
 
 
 class Database():

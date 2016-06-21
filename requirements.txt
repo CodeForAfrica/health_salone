@@ -3,3 +3,4 @@ psycopg2
 nose
 requests>=2.5.1
 dataset
+twilio

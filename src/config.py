@@ -12,3 +12,12 @@ LOGS = dict(
 
 MESSAGE_BROKER = os.getenv('SL_RABBITMQ_URL')
 DATABASE = os.getenv('SL_DATABASE_URL')
+
+
+TWILIO = dict(
+        SID=os.getenv('SL_TWILIO_SID'),
+        TOKEN=os.getenv('SL_TWILIO_TOKEN'),
+        SENDER=os.getenv('SL_TWILIO_SENDER')
+        )
+
+MAX_MESSAGE_LENGTH = 400
